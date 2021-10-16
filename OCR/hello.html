@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Getting Started: Serving Web Content</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="http://cstaticdun.126.net/load.min.js"></script>
+    
+    <style type="text/css">
+    img{
+	 position:absolute;   
+	}
+    </style>
+</head>
+<body>
+   <label>Left</label><input id="left" type="text" />
+    <label>Top</label><input id="top" type="text" />
+    
+    
+    <label>Index</label><input id="idx" type="text" value="0"/>
+    
+    <button id="btn" onclick="simulate(this)">Move</button>
+    <button id="btn" onclick="select(this)">Select</button>
+    <button id="btn" onclick="mark(this)">Click</button>
+    
+    
+    <form style="max-width: 320px; margin: 120px auto;" action="/login"
+		method="post">
+		
+		<input type="text" class="form-control" name="username"
+			placeholder="账号" /> <input type="password" class="form-control"
+			name="password" placeholder="密码" />
+		<div style="margin: 10px auto;" id="captcha_div"></div>
+		<!-- 验证码容器元素定义 -->
+		<button class="btn btn-lg btn-primary btn-block" type="submit"
+			id="submit-btn">登录</button>
+	</form>
+    
+    
+    <script type="text/javascript">
+    	var _INSTANCE;
+    	
+	    function imitateClick(oElement, iClientX, iClientY) {
+
+       var oEvent;
+       if (document.createEventObject) {
+         //For IE
+         oEvent = document.createEventObject();
+         oEvent.clientX =  iClientX ;
+         oEvent.clientY =  iClientY ;
+         oElement.fireEvent("onclick", oEvent);
+       } else {
+	   var imgClient=$('div.yidun_bgimg')[0].getBoundingClientRect();
+	   var imgX= imgClient.left ;
+	   var imgY=  imgClient.top ;
+         oEvent = document.createEvent("MouseEvents");
+         oEvent.initMouseEvent(
+           "click",
+           true,
+           true,
+           document.defaultView,
+           0,
+           0,
+           0,
+           parseInt(iClientX)+imgX,
+           parseInt(iClientY)+imgY /*, false, false, false, false, 0, null*/
+         );
+   
+   console.log(oEvent)
+         oElement.dispatchEvent(oEvent);
+       }
+     }
+
+    
+    
+    
+    	initNECaptcha({
+		    captchaId: '1a623022803d4cbc86fa157ec267bb36',
+		    element: '#captcha_div',
+		    mode: 'embed', // 如果要用触发式，这里改为float即可
+		    width: '320px',
+		    maxVerification: 1,
+		    onVerify: function(err, ret){
+		      if(!err){
+		          // ret['validate'] 获取二次校验数据
+		      }
+		    }
+		}, function (instance) {
+		    // 初始化成功后得到验证实例instance，可以调用实例的方法
+		    $('div.yidun_inference').css('display', 'block');
+		    
+		    _INSTANCE = instance;
+
+		}, function (err) {
+		    // 初始化失败后触发该函数，err对象描述当前错误信息
+		});
+		
+		
+		
+    	function simulate(e) {
+    		var left = $('#left').val()
+    		var top = $('#top').val()
+			move(left, top);
+    		
+    	}
+    	
+    	function select(e) {
+    		$('#pointer').remove()
+    		var pointerHtml = '<img id="pointer" src="http://cdn1.iconfinder.com/data/icons/CrystalClear/22x22/actions/14_select.png" />';
+    		var idx = $('#idx').val()
+    		//var target = $('div.yidun_inference--'+idx);
+    		var target = $('div.yidun_bgimg');
+    		
+    		
+    		$(target).append(pointerHtml);
+    		
+    		//$('div.yidun_inference--'+idx).trigger('click');
+    	}
+    	
+    	function mark(e) {
+    		var left = $('#left').val()
+    		var top = $('#top').val()
+    		var idx = $('#idx').val()
+   			//var target = $('div.yidun_inference--'+idx);
+   			var target = $('div.yidun_bgimg');
+   			
+   			
+	  		var event = jQuery.Event("click");
+	        //event.pageX = left;
+	        //event.pageY = top;
+	        
+	        event.clientX = left;
+	        event.clientY = top;
+	        
+	        //$(target).trigger(event, [event]);
+			
+			imitateClick($(target)[0], left, top);
+    	}
+    
+		function move(left, top) {
+			var fakeMouse = $('#pointer');		  	
+		  	fakeMouse.animate({
+				top:  top,
+      			left: left
+		  	}, 1200, 'swing', function(){
+		  		
+		  	});
+		}
+		
+		
+		
+    </script>
+</body>
+</html>

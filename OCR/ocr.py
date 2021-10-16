@@ -4,7 +4,7 @@ import time
 import json
 
 if __name__ == '__main__':
-    path = r"4.jpg"
+    path = r"9.jpg"
     with open(path, 'rb') as f:
         path = f.read()
     cap = captcha.TextSelectCaptcha()
